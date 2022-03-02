@@ -5,9 +5,9 @@ const randomMnemonic = ethers.Wallet.createRandom().mnemonic;
 const app = express();
 
 app.get("/importwallet", (req, res) => {
-  let phrase = req.body.phrase; // get phrase from request
+  let phrase = req.body.phrase;  // get phrase from request
   let walletAddress = ethers.Wallet.fromMnemonic(phrase); // create wallet from phrase
-  
+ 
   res.send(walletAddress.address);
 });
 
