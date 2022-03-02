@@ -1,6 +1,7 @@
 const express = require('express');
 const ethers = require('ethers');
-const randomMnemonic = ethers.Wallet.createRandom().mnemonic;
+const Moralis  = require('moralis/node');
+
 
 const app = express();
 
@@ -12,16 +13,22 @@ app.get("/importwallet", (req, res) => {
 });
 
 app.get("/balances", (req, res) => {
-
   res.send("Get Balances!");
 });
 
 app.get("/transfer", (req, res) => {
   res.send("Transfer");
 });
-app.get("/newwallet", (req, res) => {
+
+app.get("/createwallet", (req, res) => {
+    let randomMnemonic = ethers.Wallet.createRandom().mnemonic; // Generate a random mnemonic
     let newphrase = randomMnemonic.phrase;
-    res.send(newphrase);
+    let walletAddress = ethers.Wallet.fromMnemonic(newphrase); // create wallet from phrase
+    let payload = {
+      "address": walletAddress.address,
+      "phrase": newphrase
+    }
+    res.send(payload);   
 });
 
 app.listen(8000, () => {
