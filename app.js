@@ -1,51 +1,22 @@
 const express = require('express');
-const ethers = require('ethers');
-const Moralis  = require('moralis/node');
-const serverUrl = "https://rd3zwgbmyxc7.usemoralis.com:2053/server";
-const appId = "WJpctCjutLfVyuvPYaGLkywcrd5ZRwy7cTmmnJ3u";
-Moralis.start({ serverUrl, appId });
+const newWallet = require('./functions/wallet');
+const newUser = require('./functions/moralis');
 
 const app = express();
 
-app.get("/signup", (req, res) => {
-  const user = new Moralis.User();
-  user.set("username", "Olvra");
-  user.set("password", "12456789");
-  user.set("email", "oi@exple.com");
-   
-  user.signUp().then((user) => {
-    try {
-      res.send(user);
-    }
-    catch(err) {console.log(err)}
-  });  
-;});
-
-app.get("/balances", (req, res) => {  
-  res.send(balances); 
-});
-
-app.get("/transfer", (req, res) => {  
-  res.send("transfer");
+app.get("/signup/:username/:email/:password", async (req, res) => {  
+  let username = req.params.username;
+  let email = req.params.email;
+  let password = req.params.password;
+  let user = await newUser(username, email, password);
+  res.send(user);  
 });
 
 app.get("/createwallet", (req, res) => {
-    let randomMnemonic = ethers.Wallet.createRandom().mnemonic; // Generate a random mnemonic
-    let newphrase = randomMnemonic.phrase;
-    let walletAddress = ethers.Wallet.fromMnemonic(newphrase);
-    
-    // Get Private Key from mnemonics
-    let privateKey = walletAddress.privateKey;
-    let privateKeyHex = privateKey.substring(2);
-    let payload = {
-      "address": walletAddress.address,
-      "phrase": newphrase,
-      "privateKeyHex": privateKeyHex,
-      "privateKey": privateKey      
-    }
-    res.send(payload);   
+  let result = newWallet();
+  res.send(result);  
 });
 
 app.listen(8000, () => {
-    console.log("Server running on port 8000");
+    console.log("Server running on port http://localhost:8000");
 });
